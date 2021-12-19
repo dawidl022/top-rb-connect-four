@@ -72,6 +72,7 @@ RSpec.describe Player do
       end
 
       it 'returns the valid input' do
+        mute_io
         expect(player1.move(10, 20)).to eq(17)
       end
     end

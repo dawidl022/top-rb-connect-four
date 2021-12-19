@@ -214,7 +214,7 @@ RSpec.describe Board do
     end
 
     context 'when a four is connected diagonally' do
-      context 'in the shape of a forward slash' do
+      context 'in the shape of a backward slash' do
         it "is expected to be game over only when there are 4 of same colour" do
           (0..2).each do |i|
             (3 - i).times do
@@ -232,7 +232,7 @@ RSpec.describe Board do
         end
       end
 
-      context 'in the shape of a backward slash' do
+      context 'in the shape of a forward slash' do
         it "is expected to be game over only when there are 4 of same colour" do
           6.downto(4) do |i|
             (i - 3).times do
@@ -274,7 +274,7 @@ RSpec.describe Board do
         end
       end
 
-      context 'when :X wins diagonally in a forward slash' do
+      context 'when :X wins diagonally in a backward slash' do
         it 'returns the piece of the winner' do
           (0..2).each do |i|
             (3 - i).times do
@@ -290,7 +290,7 @@ RSpec.describe Board do
         end
       end
 
-      context 'when :O wins diagonally in a backward slash' do
+      context 'when :O wins diagonally in a forward slash' do
         it 'returns the piece of the winner' do
           6.downto(4) do |i|
             (i - 3).times do

@@ -115,20 +115,15 @@ class Board
   end
 
   def goal_in_diagonal?(piece)
-    goal_in_forward_diagonal?(piece) || goal_in_backwards_diagonal?(piece)
+    goal_in_backward_diagonal?(piece) || goal_in_forward_diagonal?(piece)
   end
 
-  def goal_in_forward_diagonal?(piece)
+  def goal_in_backward_diagonal?(piece)
     goal_reached = false
-    (0..11).each do |max|
+    (0..5).each do |max|
       x = 0 # column
       y = max # row
-      diagonal = []
-      while (x >= 0  && y >= 0 && x < NUMBER_OF_COLUMNS && y < NUMBER_OF_ROWS)
-        diagonal << @board[x][y]
-        x += 1
-        y -= 1
-      end
+      diagonal = traverse_diagonal(x, y, 1, -1)
 
       goal_reached = goal_in_array?(diagonal, piece)
       break if goal_reached
@@ -136,18 +131,13 @@ class Board
     piece if goal_reached
   end
 
-  def goal_in_backwards_diagonal?(piece)
+  def goal_in_forward_diagonal?(piece)
     goal_reached = false
     (0..6).each do |start|
       (start..6).each do |diff|
         x = start
         y = 5 - diff
-        diagonal = []
-        while (x >= 0  && y >= 0 && x < NUMBER_OF_COLUMNS && y < NUMBER_OF_ROWS)
-          diagonal << @board[x][y]
-          x += 1
-          y += 1
-        end
+        diagonal = traverse_diagonal(x, y, 1, 1)
 
         goal_reached = goal_in_array?(diagonal, piece)
         break if goal_reached
@@ -171,5 +161,17 @@ class Board
     end
 
     max_count >= GOAL
+  end
+
+  def traverse_diagonal(x, y, x_increment, y_increment)
+    diagonal = []
+
+    while (x >= 0  && y >= 0 && x < NUMBER_OF_COLUMNS && y < NUMBER_OF_ROWS)
+      diagonal << @board[x][y]
+      x += x_increment
+      y += y_increment
+    end
+
+    diagonal
   end
 end
