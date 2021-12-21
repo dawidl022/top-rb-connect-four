@@ -1,7 +1,10 @@
 require 'colorize'
 require_relative '../lib/board'
+require_relative 'util'
 
 RSpec.describe Board do
+  include Util
+
   subject(:board) { described_class.new({ X: :red, O: :yellow }) }
 
   it 'should start out with 7 empty arrays' do
@@ -249,6 +252,13 @@ RSpec.describe Board do
         end
       end
     end
+
+    context "when the board is full but there is no winner" do
+      before do
+        drawing_game(board)
+      end
+      it { should be_game_over }
+    end
   end
 
   describe '#winner' do
@@ -316,6 +326,16 @@ RSpec.describe Board do
         end
       end
     end
+
+    context "when the board is full but there is no winner" do
+      before do
+        drawing_game(board)
+      end
+
+      it "returns nil" do
+        expect(board.winner).to be_nil
+      end
+    end
   end
 
   describe "#column_full?" do
@@ -346,6 +366,18 @@ RSpec.describe Board do
       end
 
       it { should be_column_full(0) }
+    end
+  end
+
+  describe "#clear_board" do
+    before do
+      board.place(:X, 0)
+      board.place(:O, 1)
+    end
+
+    it "removes all the pieces" do
+      board.clear_board
+      expect(board.board).to all(be_empty)
     end
   end
 end

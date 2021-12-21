@@ -20,18 +20,17 @@ class ConnectFour
     @player1 = Player.new(:X, :red)
     @player2 = Player.new(:O, :yellow)
     @main_menu = Menu.new([[:Play, 1], [:Quit, 1]])
-  end
-
-  def play_game
     @board = Board.new({
       @player1.piece => @player1.colour,
       @player2.piece => @player2.colour,
     })
+  end
 
+  def play_game
     turn_number = 1
     current_player = nil
 
-    until @board.winner
+    until @board.game_over?
       player_number = turn_number % 2 == 1 ? 1 : 2
       current_player = player_number == 1 ? @player1 : @player2
 
@@ -45,7 +44,7 @@ class ConnectFour
     end
 
     puts @board.draw_board
-    print_winner(player_number)
+    print_winner([@player1, @player2])
 
     play_again?
   end
@@ -62,6 +61,7 @@ class ConnectFour
 
       loop do
         play_again = play_game
+        @board.clear_board
         break unless play_again
       end
       put_blank_line
@@ -74,8 +74,16 @@ class ConnectFour
     ask_yes_no_question("Do you want to play again?")
   end
 
-  def print_winner(winner)
-    puts "GAME OVER! Player #{winner} wins!"
+  def print_winner(players)
+    output =
+      if @board.winner
+        winner = players.find_index { |player| player.piece == @board.winner }
+        "GAME OVER! Player #{winner + 1} wins!"
+      else
+        "GAME OVER! Good job, the game ended in a draw!"
+      end
+
+    puts output
   end
 
   def make_move(current_player)

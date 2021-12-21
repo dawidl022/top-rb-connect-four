@@ -44,7 +44,7 @@ class Board
   end
 
   def game_over?
-    !!winner
+    !!winner || board_full?
   end
 
   def winner
@@ -63,6 +63,10 @@ class Board
 
   def column_full?(column_index)
     @board[column_index].length >= NUMBER_OF_ROWS
+  end
+
+  def clear_board
+    @board.each { |column| column.clear }
   end
 
   private
@@ -177,5 +181,9 @@ class Board
     end
 
     diagonal
+  end
+
+  def board_full?
+    @board.each_index.all? { |column| column_full?(column) }
   end
 end

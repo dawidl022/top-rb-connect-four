@@ -141,6 +141,23 @@ RSpec.describe ConnectFour do
         end
       end
 
+      context 'when there is a draw' do
+        let(:board) { instance_double(Board) }
+
+        before do
+          allow(board).to receive(:game_over?).and_return(true)
+          allow(board).to receive(:winner).and_return(nil)
+          allow(board).to receive(:draw_board)
+          connect_four.instance_variable_set(:@board, board)
+        end
+
+        it "the game prints GAME OVER and declares a draw" do
+          expect { connect_four.play_game }.to output(
+            /GAME OVER! Good job, the game ended in a draw!/
+          ).to_stdout
+        end
+      end
+
       context 'when the board is full and there is no winner'
     end
   end
@@ -194,6 +211,12 @@ RSpec.describe ConnectFour do
       it 'starts another game' do
         allow(connect_four).to receive(:play_game).and_return(true, false)
         expect(connect_four).to receive(:play_game).twice
+        connect_four.show_main_menu
+      end
+
+      it "resets the board after each game" do
+        expect(connect_four.instance_variable_get(:@board))
+          .to receive(:clear_board).twice
         connect_four.show_main_menu
       end
     end
