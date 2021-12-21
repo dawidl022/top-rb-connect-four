@@ -63,7 +63,7 @@ module Validatable
       user_option = linear_search_case_insensitive(options, gets.chomp)
       break unless user_option == -1
 
-      puts "Invalid input. Enter one of the following: ['Play', 'Quit']"
+      puts "Invalid input. Enter one of the following: #{options}"
     end
 
     user_option

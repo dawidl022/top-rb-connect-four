@@ -263,8 +263,8 @@ RSpec.describe Validatable do
       end
 
       it 'returns the index of the chosen option (case-insensitive)' do
-        expect(dummy_class.input_option('', options))
-        .to eq(1)
+        mute_io(dummy_class)
+        expect(dummy_class.input_option('', options)).to eq(1)
       end
     end
 
@@ -275,8 +275,9 @@ RSpec.describe Validatable do
 
       it 'prints an error message twice' do
         expect(dummy_class).to receive(:puts).with(
-          "Invalid input. Enter one of the following: ['Play', 'Quit']"
+          "Invalid input. Enter one of the following: [\"Play\", \"Quit\"]"
         ).twice
+        mute_io(dummy_class, [:print])
         dummy_class.input_option('', ['Play', 'Quit'])
       end
 
@@ -290,6 +291,24 @@ RSpec.describe Validatable do
       it 'returns the valid response' do
         mute_io(dummy_class)
         expect(dummy_class.input_option('', ['Play', 'Quit'])).to eq(0)
+      end
+    end
+
+    context 'when given bad input on a different set of options' do
+      before do
+        allow(dummy_class).to receive(:gets).and_return('a', 'p')
+      end
+      it 'prints an error message' do
+        expect(dummy_class).to receive(:puts).with(
+          "Invalid input. Enter one of the following: [\"P\", \"Q\"]"
+        ).once
+        mute_io(dummy_class, [:print])
+        dummy_class.input_option('', ['P', 'Q'])
+      end
+
+      it 'returns the valid response' do
+        mute_io(dummy_class)
+        expect(dummy_class.input_option('', ['P', 'Q'])).to eq(0)
       end
     end
   end

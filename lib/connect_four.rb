@@ -1,21 +1,33 @@
 require_relative 'player'
 require_relative 'board'
 require_relative 'util'
+require_relative 'menu'
 require_relative 'validatable'
 
 class ConnectFour
   include Validatable
 
+  TITLE = <<~TITLE
+     a88888b.                                                dP       88888888b
+    d8'   `88                                                88       88
+    88        .d8888b. 88d888b. 88d888b. .d8888b. .d8888b. d8888P    a88aaaa    .d8888b. dP    dP 88d888b.
+    88        88'  `88 88'  `88 88'  `88 88ooood8 88'  `""   88       88        88'  `88 88    88 88'  `88
+    Y8.   .88 88.  .88 88    88 88    88 88.  ... 88.  ...   88       88        88.  .88 88.  .88 88
+     Y88888P' `88888P' dP    dP dP    dP `88888P' `88888P'   dP       dP        `88888P' `88888P' dP
+  TITLE
+
   def initialize
     @player1 = Player.new(:X, :red)
     @player2 = Player.new(:O, :yellow)
+    @main_menu = Menu.new([[:Play, 1], [:Quit, 1]])
+  end
+
+  def play_game
     @board = Board.new({
       @player1.piece => @player1.colour,
       @player2.piece => @player2.colour,
     })
-  end
 
-  def play_game
     turn_number = 1
     current_player = nil
 
@@ -36,6 +48,24 @@ class ConnectFour
     print_winner(player_number)
 
     play_again?
+  end
+
+  def show_main_menu
+    loop do
+      puts TITLE
+      put_blank_line
+
+      @main_menu.display_menu
+
+      menu_option = @main_menu.take_input
+      break if menu_option == 1
+
+      loop do
+        play_again = play_game
+        break unless play_again
+      end
+      put_blank_line
+    end
   end
 
   private
@@ -59,4 +89,8 @@ class ConnectFour
 
     @board.place(current_player.piece, desired_move)
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  ConnectFour.new.show_main_menu
 end

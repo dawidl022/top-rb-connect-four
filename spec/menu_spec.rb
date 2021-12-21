@@ -166,6 +166,43 @@ RSpec.describe Menu do
         end
       end
 
+      context 'when bad input is entered' do
+        context 'when the whole option is bracketed' do
+          before do
+            allow(menu).to receive(:gets).and_return("oo", "play")
+          end
+
+          it "displays an error message with the list of available options" do
+            expect { menu.take_input }
+              .to output(/#{Regexp.quote('["Play", "Quit"]')}/).to_stdout
+          end
+        end
+
+        context 'when starting/ending indices of brackets is given' do
+          subject(:menu) { described_class.new([[:Play, 1], [:Quit, 0, 2]]) }
+
+          before do
+            allow(menu).to receive(:gets).and_return("a", "qu")
+          end
+
+          it "displays an error message with the list of available options" do
+            expect { menu.take_input }
+              .to output(/#{Regexp.quote('["P", "Qu"]')}/).to_stdout
+          end
+        end
+      end
+    end
+
+    context "when given an argument" do
+      before do
+        allow(menu).to receive(:gets).and_return("quit")
+      end
+
+      it "displays it as prompt" do
+        expect { menu.take_input("Enter:") }.to output(
+          "Enter: "
+        ).to_stdout
+      end
     end
   end
 end

@@ -1,22 +1,26 @@
 require_relative '../lib/connect_four'
 require_relative '../lib/board'
 require_relative '../lib/player'
+require_relative '../lib/menu'
 require_relative 'util'
-require 'stringio'
 
 RSpec.describe ConnectFour do
   include Util
+
+  def stub_player_input(subject)
+    allow(subject.instance_variable_get(:@player1))
+    .to receive(:move).and_return(0, 1, 2, 3)
+    allow(subject.instance_variable_get(:@player2))
+    .to receive(:move).and_return(0, 6, 6, 4)
+  end
 
   describe "#play_game" do
     subject(:connect_four) { described_class.new }
     let(:board) { Board.new({ X: :red, O: :yellow }) }
 
     before do
-      allow(connect_four.instance_variable_get(:@player1))
-      .to receive(:move).and_return(0, 1, 2, 3)
-      allow(connect_four.instance_variable_get(:@player2))
-      .to receive(:move).and_return(0, 6, 6, 4)
-      allow(connect_four).to receive(:gets).and_return('y')
+      stub_player_input(connect_four)
+      allow(subject).to receive(:gets).and_return('y')
       mute_io(subject, [:print])
     end
 
@@ -138,6 +142,60 @@ RSpec.describe ConnectFour do
       end
 
       context 'when the board is full and there is no winner'
+    end
+  end
+
+  describe "#main_menu" do
+    subject(:connect_four) { described_class.new }
+    let(:menu) { instance_double(Menu) }
+
+    before do
+      mute_io
+      allow(menu).to receive(:display_menu)
+      allow(menu).to receive(:take_input).and_return(0, 1)
+      allow(connect_four).to receive(:gets).and_return('y', 'n')
+      connect_four.instance_variable_set(:@main_menu, menu)
+      stub_player_input(connect_four)
+    end
+
+
+    it "prints an ASCII art title" do
+      title = <<~TITLE
+         a88888b.                                                dP       88888888b
+        d8'   `88                                                88       88
+        88        .d8888b. 88d888b. 88d888b. .d8888b. .d8888b. d8888P    a88aaaa    .d8888b. dP    dP 88d888b.
+        88        88'  `88 88'  `88 88'  `88 88ooood8 88'  `""   88       88        88'  `88 88    88 88'  `88
+        Y8.   .88 88.  .88 88    88 88    88 88.  ... 88.  ...   88       88        88.  .88 88.  .88 88
+         Y88888P' `88888P' dP    dP dP    dP `88888P' `88888P'   dP       dP        `88888P' `88888P' dP
+      TITLE
+
+      expect(connect_four).to receive(:puts).with(title).once
+      expect(connect_four).to receive(:puts).at_least(:once)
+      connect_four.show_main_menu
+    end
+
+    it "calls the menu to be displayed" do
+      expect(menu).to receive(:display_menu)
+      connect_four.show_main_menu
+    end
+
+    it "starts the game when p is entered" do
+      expect(connect_four).to receive(:play_game)
+      connect_four.show_main_menu
+    end
+
+    it "quits when q is entered" do
+      allow(menu).to receive(:take_input).and_return(1)
+      expect(connect_four).to_not receive(:play_game)
+      connect_four.show_main_menu
+    end
+
+    context 'when players choose to play another game' do
+      it 'starts another game' do
+        allow(connect_four).to receive(:play_game).and_return(true, false)
+        expect(connect_four).to receive(:play_game).twice
+        connect_four.show_main_menu
+      end
     end
   end
 end

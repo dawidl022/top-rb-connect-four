@@ -21,7 +21,7 @@ class Menu
   end
 
   def take_input(prompt = "Enter an option:")
-    input_option(prompt, @options.map { |option| option[0].to_s })
+    input_option(prompt, @options.map { |option| bracketed(option) })
   end
 
   private
@@ -87,6 +87,18 @@ class Menu
       "#{text[...option[1]]}" \
           "[#{text[option[1]...option[2]]}]" \
           "#{text[option[2]..]}"
+    end
+  end
+
+  def bracketed(option)
+    text = option[0].to_s
+
+    if option.length == 1
+      "#{text}"
+    elsif option.length == 2
+      "#{text[...option[1]]}"
+    else
+      "#{text[option[1]...option[2]]}"
     end
   end
 end
