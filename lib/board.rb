@@ -1,3 +1,5 @@
+require 'colorize'
+
 class Board
   attr_reader :board
 
@@ -32,9 +34,7 @@ class Board
       raise IndexError, 'Such a column does not exist on the board'
     end
 
-    if @board[column].length >= NUMBER_OF_ROWS
-      raise ArgumentError, 'Cannot append to full column'
-    end
+    raise ArgumentError, 'Cannot append to full column' if column_full?(column)
 
     @board[column] << piece
   end
@@ -59,6 +59,10 @@ class Board
     end
 
     winner_piece
+  end
+
+  def column_full?(column_index)
+    @board[column_index].length >= NUMBER_OF_ROWS
   end
 
   private

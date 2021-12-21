@@ -317,4 +317,35 @@ RSpec.describe Board do
       end
     end
   end
+
+  describe "#column_full?" do
+    context "when column is empty" do
+      it { should_not be_column_full(0) }
+    end
+
+    context "when column is not full" do
+      before do
+        board.place(:X, 0)
+        board.place(:X, 0)
+        board.place(:X, 0)
+        board.place(:X, 0)
+        board.place(:X, 0)
+      end
+
+      it { should_not be_column_full(0) }
+    end
+
+    context "when column is full" do
+      before do
+        board.place(:X, 0)
+        board.place(:X, 0)
+        board.place(:X, 0)
+        board.place(:X, 0)
+        board.place(:X, 0)
+        board.place(:X, 0)
+      end
+
+      it { should be_column_full(0) }
+    end
+  end
 end

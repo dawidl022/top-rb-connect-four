@@ -15,6 +15,6 @@ class Player
     prompt = 'Enter column number: '
     error_message = 'Invalid input.' \
       " Please enter an integer between #{min} and #{max}."
-    input_int_between(prompt, error_message, min, max)
+    input_int_between(prompt, min, max, error_message)
   end
 end

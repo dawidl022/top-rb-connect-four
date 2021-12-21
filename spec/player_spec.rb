@@ -58,6 +58,11 @@ RSpec.describe Player do
           /Invalid input. Please enter an integer between 0 and 6./
         ).to_stdout
       end
+
+      it 'returns the valid integer' do
+        mute_io
+        expect(player1.move).to eq(4)
+      end
     end
 
     context 'invalid input when the min and max are non-default' do
