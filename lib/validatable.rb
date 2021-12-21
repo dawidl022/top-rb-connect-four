@@ -50,4 +50,34 @@ module Validatable
 
     answer == 'y' || answer == 'yes'
   end
+
+  def input_option(prompt, options)
+    if options.length < 1
+      raise ArgumentError, "At least 1 option must be provided!"
+    end
+
+    user_option = nil
+
+    loop do
+      print prompt + ' '
+      user_option = linear_search_case_insensitive(options, gets.chomp)
+      break unless user_option == -1
+
+      puts "Invalid input. Enter one of the following: ['Play', 'Quit']"
+    end
+
+    user_option
+  end
+
+  private
+
+  def linear_search_case_insensitive(collection, target)
+    target = target.downcase
+
+    collection.each_with_index do |item, index|
+      return index if item.downcase == target
+    end
+
+    -1
+  end
 end

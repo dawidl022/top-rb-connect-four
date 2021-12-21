@@ -239,4 +239,58 @@ RSpec.describe Validatable do
       ).to_stdout
     end
   end
+
+  describe "#input_option" do
+    context "when given an empty options collection" do
+      it "raises an error" do
+        expect { dummy_class.input_option('', []) }.to raise_error(
+          ArgumentError, "At least 1 option must be provided!"
+        )
+      end
+    end
+
+    context "when given a non-empty options collection" do
+      before do
+        allow(dummy_class).to receive(:gets).and_return('high scores')
+      end
+
+      options = ['Play', 'High scores', 'Quit']
+
+      it 'prints the given prompt' do
+        expect { dummy_class.input_option('Enter option:', options) }.to output(
+          'Enter option: '
+        ).to_stdout
+      end
+
+      it 'returns the index of the chosen option (case-insensitive)' do
+        expect(dummy_class.input_option('', options))
+        .to eq(1)
+      end
+    end
+
+    context 'when given bad input twice by the user' do
+      before do
+        allow(dummy_class).to receive(:gets).and_return('p', 'pla', 'play')
+      end
+
+      it 'prints an error message twice' do
+        expect(dummy_class).to receive(:puts).with(
+          "Invalid input. Enter one of the following: ['Play', 'Quit']"
+        ).twice
+        dummy_class.input_option('', ['Play', 'Quit'])
+      end
+
+      it 'reprompts the user twice' do
+        mute_io(dummy_class, [:puts])
+        expect(dummy_class).to receive(:print).with('Enter option: ')
+          .exactly(3).times
+        dummy_class.input_option('Enter option:', ['Play', 'Quit'])
+      end
+
+      it 'returns the valid response' do
+        mute_io(dummy_class)
+        expect(dummy_class.input_option('', ['Play', 'Quit'])).to eq(0)
+      end
+    end
+  end
 end
